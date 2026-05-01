@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="km">
 
@@ -2791,10 +2792,10 @@
                     បង្កើតគណនី</button>
             </div>
             <div style="margin-top: 25px;">
-                <div id="adminBtnLink"
-                    style="color: #64748b; font-size: 14px; text-decoration: none; font-weight: bold; cursor: default;">
-                    <i class="fas fa-cog"></i> <span id="adminBtnText">ផ្ទាំងអ្នកបច្ចេកទេស (Admin PSMS)</span>
-                </div>
+                <a href="https://psms-kruny.vercel.app/admin" target="_blank" id="adminBtnLink"
+                    style="color: #64748b; font-size: 14px; text-decoration: none; font-weight: bold; cursor: pointer;">
+                    <i class="fas fa-user-shield"></i> <span id="adminBtnText">ផ្ទាំងអ្នកបច្ចេកទេស (Admin PSMS)</span>
+                </a>
             </div>
         </div>
     </div>
@@ -2929,7 +2930,7 @@
             <div class="footer-actions">
                 <button class="btn btn-purple" onclick="openYearlyAverage()"><i class="fas fa-chart-line"></i>
                     មធ្យមភាគប្រចាំឆ្នាំ</button>
-                <button class="btn btn-purple"><i class="fas fa-clipboard-list"></i> តារាងកិត្តិយស</button>
+                <button class="btn btn-purple" onclick="openHonorRoll()"><i class="fas fa-clipboard-list"></i> តារាងកិត្តិយស</button>
                 <button class="btn btn-purple" onclick="openGradeReport()"><i class="fas fa-award"></i> និទ្ទេស
                     ABC</button>
                 <button class="btn btn-purple" id="btnOpenTrackingBook"><i class="fas fa-book"></i> សៀវភៅតាមដាន</button>
@@ -2956,7 +2957,7 @@
                 <header class="admin-topbar">
                     <div class="admin-title">ផ្ទាំងអ្នកគ្រប់គ្រង (Admin)</div>
                     <div style="display: flex; gap: 10px; align-items: center;">
-                        <a href="admin/" class="btn btn-blue" style="font-size: 13px; padding: 8px 15px;"><i
+                        <a href="https://psms-kruny.vercel.app/admin" target="_blank" class="btn btn-blue" style="font-size: 13px; padding: 8px 15px;"><i
                                 class="fas fa-external-link-alt"></i> ទៅកាន់ Advanced CMS</a>
                         <div class="auth-buttons" style="position: static;"><button class="btn-logout"
                                 style="padding: 8px 15px;" onclick="logout()"><i class="fas fa-sign-out-alt"></i>
@@ -4144,6 +4145,8 @@
                         <th style="padding: 4px;">ស្រី</th>
                         <th style="padding: 4px;">សរុប</th>
                         <th style="padding: 4px;">ស្រី</th>
+                        <th style="padding: 4px;">សរុប</th>
+                        <th style="padding: 4px;">ស្រី</th>
                     </tr>
                 </thead>
                 <tbody id="gradeReportTableBody">
@@ -4958,7 +4961,8 @@
         .month-btn:hover {
             background: #fff;
             color: #2563eb;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);}
+        ```html
         }
 
         .month-btn.active {
