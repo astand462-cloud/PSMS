@@ -2283,6 +2283,15 @@
                 page-break-after: avoid !important;
                 page-break-inside: avoid !important;
             }
+            
+            #printTrackingArea .tk-table th,
+            #printTrackingArea .tk-table td {
+                padding: 2px 3px !important;
+                font-size: 11px !important;
+                line-height: 1.2 !important;
+            }
+            #printTrackingArea .tk-table th[rowspan="2"]:first-child { width: 22% !important; }
+            #printTrackingArea .tk-table th[rowspan="2"]:last-child { width: 28% !important; }
 
             /* Print specific for Certificate */
             .cert-golden-frame {
@@ -3893,12 +3902,21 @@
         style="display:none; width: 100%; min-height: 100vh; padding: 20px; position: absolute; top: 0; left: 0; z-index: 100; overflow-y: auto;">
         <div class="ms-header-controls"
             style="max-width: 210mm; margin: 0 auto 15px auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-            <button class="btn btn-orange" onclick="closeHonorRoll()"><i class="fas fa-arrow-left"></i>
-                ត្រឡប់ទៅទំព័រមុន</button>
-            <div style="font-family:'Moul', serif; color:#eab308; font-size:18px;">ទំព័របោះពុម្ពតារាងកិត្តិយសសិស្សឆ្នើម
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-orange" onclick="closeHonorRoll()"><i class="fas fa-arrow-left"></i> ត្រឡប់</button>
+                <select id="hrMonthSelectDropdown" class="ef-input" style="width: auto; padding: 8px; font-family:'Battambang'; font-weight:bold; cursor: pointer; border: 2px solid #eab308;">
+                    <option value="ធ្នូ">ខែធ្នូ</option>
+                    <option value="មករា">ខែមករា</option>
+                    <option value="កុម្ភៈ">ខែកុម្ភៈ</option>
+                    <option value="មីនា">ខែមីនា</option>
+                    <option value="មេសា-ឧសភា">មេសា-ឧសភា</option>
+                    <option value="មិថុនា">ខែមិថុនា</option>
+                    <option value="កក្កដា">ខែកក្កដា</option>
+                    <option value="សីហា">ខែសីហា</option>
+                </select>
             </div>
-            <button class="btn btn-green" onclick="window.print()"><i class="fas fa-print"></i> បោះពុម្ព (1
-                Page)</button>
+            <div style="font-family:'Moul', serif; color:#eab308; font-size:18px;">តារាងកិត្តិយសសិស្សឆ្នើម</div>
+            <button class="btn btn-green" onclick="window.print()"><i class="fas fa-print"></i> បោះពុម្ព</button>
         </div>
         <div id="printHonorRollArea">
             <div class="hr-premium-header">
@@ -4254,10 +4272,10 @@
                     </div>
 
                     <div class="cert-title-moul">ប័ណ្ណសរសើរ</div>
-                    <div class="cert-director">នាយក<input type="text" id="certSchoolName" class="cert-input blue" style="width:250px; font-family:'Moul'; font-size:20px;"></div>
+                    <div class="cert-director">នាយកសាលាបឋមសិក្សា<input type="text" id="certSchoolName" class="cert-input blue" style="width:200px; font-family:'Moul'; font-size:20px;"></div>
 
                     <div class="cert-body-text">
-                        សូមសរសើរចំពោះសិស្សឈ្មោះ៖ &nbsp;<input type="text" id="certStudentNameInput" class="cert-input red" style="width:200px;"> &nbsp; 
+                        សូមសរសើរចំពោះសិស្សឈ្មោះ៖ &nbsp;<input type="text" id="certStudentNameInput" class="cert-input red" style="width:160px;"> &nbsp; 
                         ភេទ៖ <input type="text" id="certStudentGenderInput" class="cert-input red" style="width:40px;"> &nbsp; 
                         កើតថ្ងៃទី &nbsp;<input type="text" id="certStudentDobInput" class="cert-input blue" style="width:150px;"><br>
                         រៀនថ្នាក់ទី &nbsp;<input type="text" id="certClass" class="cert-input red" style="width:60px;"> &nbsp; នៃ &nbsp;
@@ -5701,19 +5719,27 @@
         document.getElementById('btnHonorRollInScore').addEventListener('click', openHonorRoll); 
 
         function openHonorRoll() { 
-            if (!currentUser || !currentEditingMonth) return; 
-            document.getElementById('btnSaveMonthlyScore').click(); 
+            if (!currentUser) return;
+            // If currentEditingMonth is not set, use the first system month as default, or whatever logic you prefer.
+            let monthToUse = currentEditingMonth || systemMonths[0]; 
+            
+            let btnSaveScore = document.getElementById('btnSaveMonthlyScore');
+            if (btnSaveScore && document.getElementById('monthlyScorePage').style.display !== 'none') {
+                btnSaveScore.click(); 
+            }
+
             let studentData = JSON.parse(localStorage.getItem(`PrimarySys_StudentData_${currentUser}`)) || []; 
-            let scoresToSave = JSON.parse(localStorage.getItem(`PrimarySys_Score_${currentEditingMonth}_${currentUser}`)) || []; 
+            let scoresToSave = JSON.parse(localStorage.getItem(`PrimarySys_Score_${monthToUse}_${currentUser}`)) || []; 
             let reportData = []; 
             let validStudents = studentData.filter(s => s[1] && s[1].trim() !== ""); 
-            let currentMonthIdx = systemMonths.indexOf(currentEditingMonth); 
+            let currentMonthIdx = systemMonths.indexOf(monthToUse); 
+            
             validStudents.forEach((student, index) => { 
                 if (student[21]) { 
                     let joinIdx = systemMonths.indexOf(student[21]); 
                     if (joinIdx > -1 && currentMonthIdx < joinIdx) return; 
                 } 
-                if (checkStudentDropout(index, student, currentEditingMonth)) return; 
+                if (checkStudentDropout(index, student, monthToUse)) return; 
                 let name = student[1] || '', scores = scoresToSave[index] || Array(25).fill(''), total = 0, count = 0; 
                 for (let i = 0; i < 20; i++) { 
                     let v = parseFloat(scores[i]); 
@@ -5727,6 +5753,7 @@
                     reportData.push({ name: name, avg: avg }); 
                 } 
             }); 
+            
             reportData.sort((a, b) => b.avg - a.avg); 
             let top5 = []; 
             let currentRank = 1, previousAvg = null, displayRank = 1; 
@@ -5739,6 +5766,7 @@
                 previousAvg = reportData[i].avg; 
                 currentRank++; 
             } 
+            
             let displayNames = ["-", "-", "-", "-", "-"], displayRanks = ["១", "២", "៣", "៤", "៥"]; 
             for (let i = 0; i < 5; i++) { 
                 if (top5[i]) { 
@@ -5746,15 +5774,17 @@
                     displayRanks[i] = convertToKhmerNumber(top5[i].rank); 
                 } 
             } 
+            
             let teacherData = JSON.parse(localStorage.getItem(`PrimarySys_TeacherData_${currentUser}`)) || {}; 
             document.getElementById('hrDistrict').innerText = teacherData.tDistrict || '.........'; 
             document.getElementById('hrSchoolName').innerText = teacherData.tSchoolName || currentUserName; 
-            document.getElementById('hrMainTitle').innerHTML = `តារាងកិត្តិយសប្រចាំ ខែ"<span id="hrMonth">${currentEditingMonth}</span>"`; 
+            document.getElementById('hrMainTitle').innerHTML = `តារាងកិត្តិយសប្រចាំ ខែ"<span id="hrMonth">${monthToUse}</span>"`; 
             document.getElementById('hrClass').innerText = teacherData.tClassName || '...'; 
             document.getElementById('hrYear').innerText = teacherData.tAcademicYear || '២០២៥-២០២៦'; 
             document.getElementById('hrTeacherNameSign').innerText = teacherData.tTeacherName || '..............................'; 
             let schoolName = teacherData.tSchoolName || currentUserName; 
             document.getElementById('hrSolarDate').value = `ធ្វើនៅ ${schoolName} ថ្ងៃទី.......ខែ..........ឆ្នាំ២០២....`; 
+            
             for (let i = 1; i <= 5; i++) { 
                 document.getElementById('hrName' + i).innerText = displayNames[i - 1]; 
                 document.getElementById('hrRank' + i).innerText = displayRanks[i - 1]; 
@@ -5764,6 +5794,7 @@
                     document.getElementById('hrName' + i).parentNode.style.opacity = "1"; 
                 } 
             } 
+            
             if (teacherData.tLogo) { 
                 document.getElementById('hrLogoImg').src = teacherData.tLogo; 
                 document.getElementById('hrLogoImg').style.display = 'block'; 
@@ -5774,10 +5805,25 @@
                 document.getElementById('hrLogoIcon').style.display = 'block'; 
                 document.getElementById('hrWatermarkImg').src = ""; 
             } 
+            
+            let hrDropdown = document.getElementById('hrMonthSelectDropdown');
+            if(hrDropdown) {
+                hrDropdown.value = monthToUse;
+            }
+
             document.getElementById('monthlyScorePage').style.display = 'none'; 
+            userDashboard.style.display = 'none';
             document.getElementById('honorRollPage').style.display = 'block'; 
             document.getElementById('printPageStyle').innerHTML = '@page{size:A4 portrait;margin:0;}'; 
         } 
+
+        const hrMonthSelectDropdown = document.getElementById('hrMonthSelectDropdown');
+        if (hrMonthSelectDropdown) {
+            hrMonthSelectDropdown.addEventListener('change', function() {
+                currentEditingMonth = this.value;
+                openHonorRoll(); // Re-render honor roll with newly selected month
+            });
+        }
 
         function closeHonorRoll() { 
             document.getElementById('printPageStyle').innerHTML = '@page{size:A4 landscape;margin:1cm;}'; 
@@ -6274,6 +6320,10 @@
                 document.getElementById('hrLogoIcon').style.display = 'block'; 
                 document.getElementById('hrWatermarkImg').src = ""; 
             } 
+
+            let hrDropdown = document.getElementById('hrMonthSelectDropdown');
+            if(hrDropdown) hrDropdown.style.display = 'none'; // Hide dropdown for semester honor roll
+
             userDashboard.style.display = 'none'; 
             document.getElementById('semesterAveragePage').style.display = 'none'; 
             document.getElementById('honorRollPage').style.display = 'block'; 
@@ -6466,6 +6516,10 @@
                     document.getElementById('hrLogoIcon').style.display = 'block'; 
                     document.getElementById('hrWatermarkImg').src = ""; 
                 } 
+
+                let hrDropdown = document.getElementById('hrMonthSelectDropdown');
+                if(hrDropdown) hrDropdown.style.display = 'none'; // Hide dropdown for yearly honor roll
+
                 userDashboard.style.display = 'none'; 
                 document.getElementById('yearlyAveragePage').style.display = 'none'; 
                 document.getElementById('honorRollPage').style.display = 'block'; 
@@ -6922,7 +6976,8 @@
                 style.id = 'printPageTracking';
                 document.head.appendChild(style);
             }
-            style.textContent = '@page{size:A4 portrait;margin:0;}';
+            // Add specific portrait page style with top/bottom margins of 2cm for Tracking Book
+            style.textContent = '@page{size:A4 portrait;margin: 2cm 0;}';
         }
         function clearTrackingPrintPageStyle() {
             const style = document.getElementById('printPageTracking');
