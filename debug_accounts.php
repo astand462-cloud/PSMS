@@ -1,1 +1,0 @@
-Account system initialized successfully.
